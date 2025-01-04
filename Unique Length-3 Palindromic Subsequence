@@ -35,34 +35,23 @@ Explanation: The 4 palindromic subsequences of length 3 are:
 // Source Code
 
 class Solution {
-public:
-    int countPalindromicSubsequence(string s) {
-        int n = s.size();
-        vector<unordered_set<char>> left(n), right(n);
-        unordered_set<string> uniquePalindromes;
+ public:
+  int countPalindromicSubsequence(string s) {
+    int ans = 0;
+    vector<int> first(26, s.length());
+    vector<int> last(26);
 
-        // Fill right sets
-        unordered_set<char> seen;
-        for (int i = n - 1; i >= 0; --i) {
-            right[i] = seen;
-            seen.insert(s[i]);
-        }
-
-        // Fill left sets and check for palindromes
-        seen.clear();
-        for (int i = 0; i < n; ++i) {
-            left[i] = seen;
-            char middle = s[i];
-            
-            // Check all palindromes of the form 'aXa'
-            for (char c : left[i]) {
-                if (right[i].count(c)) {
-                    uniquePalindromes.insert(string() + c + middle + c);
-                }
-            }
-            seen.insert(s[i]);
-        }
-
-        return uniquePalindromes.size();
+    for (int i = 0; i < s.length(); ++i) {
+      const int index = s[i] - 'a';
+      first[index] = min(first[index], i);
+      last[index] = i;
     }
+
+    for (int i = 0; i < 26; ++i)
+      if (first[i] < last[i])
+        ans += unordered_set<int>(s.begin() + first[i] + 1, s.begin() + last[i])
+                   .size();
+
+    return ans;
+  }
 };
