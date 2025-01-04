@@ -33,3 +33,36 @@ Explanation: The 4 palindromic subsequences of length 3 are:
 - "aba" (subsequence of "bbcbaba")
 
 // Source Code
+
+class Solution {
+public:
+    int countPalindromicSubsequence(string s) {
+        int n = s.size();
+        vector<unordered_set<char>> left(n), right(n);
+        unordered_set<string> uniquePalindromes;
+
+        // Fill right sets
+        unordered_set<char> seen;
+        for (int i = n - 1; i >= 0; --i) {
+            right[i] = seen;
+            seen.insert(s[i]);
+        }
+
+        // Fill left sets and check for palindromes
+        seen.clear();
+        for (int i = 0; i < n; ++i) {
+            left[i] = seen;
+            char middle = s[i];
+            
+            // Check all palindromes of the form 'aXa'
+            for (char c : left[i]) {
+                if (right[i].count(c)) {
+                    uniquePalindromes.insert(string() + c + middle + c);
+                }
+            }
+            seen.insert(s[i]);
+        }
+
+        return uniquePalindromes.size();
+    }
+};
