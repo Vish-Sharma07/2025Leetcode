@@ -1,0 +1,38 @@
+You are given an array of strings words and a string pref.
+
+Return the number of strings in words that contain pref as a prefix.
+
+A prefix of a string s is any leading contiguous substring of s.
+
+ 
+
+Example 1:
+
+Input: words = ["pay","attention","practice","attend"], pref = "at"
+Output: 2
+Explanation: The 2 strings that contain "at" as a prefix are: "attention" and "attend".
+Example 2:
+
+Input: words = ["leetcode","win","loops","success"], pref = "code"
+Output: 0
+Explanation: There are no strings that contain "code" as a prefix.
+
+// Source Code
+
+class Solution {
+public:
+    int prefixCount(vector<string>& words, string pref) {
+        int count = 0; // Initialize a counter to keep track of the strings with the given prefix.
+        int prefLength = pref.length(); // Store the length of the prefix to avoid recalculating it.
+        
+        // Iterate through each word in the words array.
+        for (const string& word : words) {
+            // Check if the prefix matches the first characters of the current word.
+            if (word.substr(0, prefLength) == pref) {
+                count++; // Increment the counter if there's a match.
+            }
+        }
+        
+        return count; // Return the total count of matching prefixes.
+    }
+};
