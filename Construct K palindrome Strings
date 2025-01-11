@@ -18,3 +18,26 @@ Example 3:
 Input: s = "true", k = 4
 Output: true
 Explanation: The only possible solution is to put each character in a separate string.
+
+//Source Code
+
+class Solution {
+public:
+    bool canConstruct(string s, int k) {
+        if (k > s.length()) return false; // Not enough characters for k palindromes
+        
+        unordered_map<char, int> freq;
+        for (char c : s) {
+            freq[c]++;
+        }
+        
+        int oddCount = 0;
+        for (auto& [ch, count] : freq) {
+            if (count % 2 != 0) {
+                oddCount++;
+            }
+        }
+        
+        return oddCount <= k;
+    }
+};
