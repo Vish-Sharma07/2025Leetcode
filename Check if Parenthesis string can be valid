@@ -29,3 +29,38 @@ Input: s = ")", locked = "0"
 Output: false
 Explanation: locked permits us to change s[0]. 
 Changing s[0] to either '(' or ')' will not make s valid.
+
+// Source Code
+
+class Solution {
+public:
+    bool canBeValid(string s, string locked) {
+        // If the length of the string is odd, it can't be valid
+        if (s.size() % 2 != 0) return false;
+
+        // First pass: Left to Right
+        int balance = 0;
+        for (int i = 0; i < s.size(); ++i) {
+            if (locked[i] == '0' || s[i] == '(') {
+                balance++;
+            } else { // locked[i] == '1' and s[i] == ')'
+                balance--;
+            }
+            if (balance < 0) return false; // Too many ')'
+        }
+
+        // Second pass: Right to Left
+        balance = 0;
+        for (int i = s.size() - 1; i >= 0; --i) {
+            if (locked[i] == '0' || s[i] == ')') {
+                balance++;
+            } else { // locked[i] == '1' and s[i] == '('
+                balance--;
+            }
+            if (balance < 0) return false; // Too many '('
+        }
+
+        return true;
+    }
+};
+
