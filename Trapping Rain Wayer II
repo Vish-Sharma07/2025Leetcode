@@ -1,0 +1,84 @@
+Given an m x n integer matrix heightMap representing the height of each unit cell in a 2D elevation map, return the volume of water it can trap after raining.
+
+ 
+
+Example 1:
+
+
+Input: heightMap = [[1,4,3,1,3,2],[3,2,1,3,2,4],[2,3,3,2,3,1]]
+Output: 4
+Explanation: After the rain, water is trapped between the blocks.
+We have two small ponds 1 and 3 units trapped.
+The total volume of water trapped is 4.
+Example 2:
+
+
+Input: heightMap = [[3,3,3,3,3],[3,2,2,2,3],[3,2,1,2,3],[3,2,2,2,3],[3,3,3,3,3]]
+Output: 10
+ 
+
+Constraints:
+
+m == heightMap.length
+n == heightMap[i].length
+1 <= m, n <= 200
+0 <= heightMap[i][j] <= 2 * 104
+
+// Source Code
+
+#include <vector>
+#include <queue>
+#include <utility>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    int trapRainWater(vector<vector<int>>& heightMap) {
+        int m = heightMap.size(), n = heightMap[0].size();
+        if (m <= 2 || n <= 2) return 0; // Cannot trap water if the matrix is too small
+        
+        vector<vector<bool>> visited(m, vector<bool>(n, false));
+        priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, greater<>> pq;
+        
+        // Push all boundary cells into the priority queue
+        for (int i = 0; i < m; ++i) {
+            for (int j : {0, n - 1}) {
+                pq.push({heightMap[i][j], {i, j}});
+                visited[i][j] = true;
+            }
+        }
+        for (int j = 0; j < n; ++j) {
+            for (int i : {0, m - 1}) {
+                pq.push({heightMap[i][j], {i, j}});
+                visited[i][j] = true;
+            }
+        }
+        
+        // Directions for neighbors (up, down, left, right)
+        vector<int> dirs = {-1, 0, 1, 0, -1};
+        int waterTrapped = 0;
+        
+        while (!pq.empty()) {
+            auto [height, cell] = pq.top();
+            pq.pop();
+            int x = cell.first, y = cell.second;
+            
+            // Process all neighbors
+            for (int d = 0; d < 4; ++d) {
+                int nx = x + dirs[d], ny = y + dirs[d + 1];
+                
+                if (nx >= 0 && ny >= 0 && nx < m && ny < n && !visited[nx][ny]) {
+                    // Water trapped depends on the difference in height
+                    waterTrapped += max(0, height - heightMap[nx][ny]);
+                    // Update the neighbor's height to maintain the boundary condition
+                    pq.push({max(height, heightMap[nx][ny]), {nx, ny}});
+                    visited[nx][ny] = true;
+                }
+            }
+        }
+        
+        return waterTrapped;
+    }
+};
