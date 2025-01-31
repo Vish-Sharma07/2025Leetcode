@@ -1,0 +1,91 @@
+You are given an n x n binary matrix grid. You are allowed to change at most one 0 to be 1.
+
+Return the size of the largest island in grid after applying this operation.
+
+An island is a 4-directionally connected group of 1s.
+
+ 
+
+Example 1:
+
+Input: grid = [[1,0],[0,1]]
+Output: 3
+Explanation: Change one 0 to 1 and connect two 1s, then we get an island with area = 3.
+Example 2:
+
+Input: grid = [[1,1],[1,0]]
+Output: 4
+Explanation: Change the 0 to 1 and make the island bigger, only one island with area = 4.
+Example 3:
+
+Input: grid = [[1,1],[1,1]]
+Output: 4
+Explanation: Can't change any 0 to 1, only one island with area = 4.
+ 
+
+Constraints:
+
+n == grid.length
+n == grid[i].length
+1 <= n <= 500
+grid[i][j] is either 0 or 1.
+
+// Source Code
+
+class Solution {
+public:
+    int largestIsland(vector<vector<int>>& grid) {
+        int n = grid.size();
+        vector<vector<int>> directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        unordered_map<int, int> area;
+        int index = 2;
+        int maxArea = 0;
+
+        // DFS to mark islands with unique index and calculate their areas
+        function<int(int, int, int)> dfs = [&](int r, int c, int index) {
+            if (r < 0 || c < 0 || r >= n || c >= n || grid[r][c] != 1) return 0;
+            grid[r][c] = index;
+            int size = 1;
+            for (auto& d : directions) {
+                size += dfs(r + d[0], c + d[1], index);
+            }
+            return size;
+        };
+
+        // Identify islands and store their areas
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    area[index] = dfs(i, j, index);
+                    maxArea = max(maxArea, area[index]);
+                    index++;
+                }
+            }
+        }
+
+        // If the whole grid is one island, return its size
+        if (maxArea == n * n) return maxArea;
+
+        // Check each zero cell to see the largest possible island by flipping
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 0) {
+                    unordered_set<int> seen;
+                    int newSize = 1;
+                    for (auto& d : directions) {
+                        int ni = i + d[0], nj = j + d[1];
+                        if (ni >= 0 && nj >= 0 && ni < n && nj < n && grid[ni][nj] > 1) {
+                            int id = grid[ni][nj];
+                            if (seen.insert(id).second) {
+                                newSize += area[id];
+                            }
+                        }
+                    }
+                    maxArea = max(maxArea, newSize);
+                }
+            }
+        }
+        
+        return maxArea;
+    }
+};
